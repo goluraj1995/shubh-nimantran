@@ -28,7 +28,7 @@ jobs:
       - name: Extract website ZIP
         run: |
           mkdir -p site
-          unzip -o shubh_nimantran_dist_v5.zip -d site
+          unzip -o shubh_nimantran_dist_v6.zip -d site
           test -f site/index.html
 
       - name: Configure Pages
