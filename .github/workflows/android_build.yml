@@ -30,7 +30,24 @@ jobs:
           java-version: '17'
 
       -       - 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Set up Android SDK
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Find project and install dependencies
+        shell: bash
+        run: |
+          PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "package.json not found"
+
         run: |
           yes | sdkmanager --licenses
           sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
