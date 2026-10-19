@@ -11,17 +11,12 @@ contents: read
 
 jobs:
 build:
-name: Build Shubh Nimantran APK
+name: Build Android APK
 runs-on: ubuntu-latest
 
 steps:
   - name: Checkout repository
     uses: actions/checkout@v4
-  - name: Find Android project
-    run: |
-      echo "Repository files:"
-      ls -la
-      find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' | head -20
   - name: Set up Node.js
     uses: actions/setup-node@v4
     with:
@@ -30,44 +25,32 @@ steps:
     uses: actions/setup-java@v4
     with:
       distribution: temurin
-      java-version: '21'
+      java-version: '17'
   - name: Set up Android SDK
     uses: android-actions/setup-android@v3
-  - name: Install dependencies and build web app
+  - name: Find project and install dependencies
+    shell: bash
     run: |
-      if [ -f package.json ]; then
-        npm install --legacy-peer-deps --no-audit --no-fund
-        npm run build
-        npx cap sync android
-        ANDROID_DIR="android"
-      else
-        PROJECT_DIR="$(dirname "$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' | head -1)")"
-        if [ -z "$PROJECT_DIR" ] || [ ! -f "$PROJECT_DIR/package.json" ]; then
-          echo "ERROR: package.json not found"
-          exit 1
-        fi
-        cd "$PROJECT_DIR"
-        npm install --legacy-peer-deps --no-audit --no-fund
-        npm run build
-        npx cap sync android
-        ANDROID_DIR="$PROJECT_DIR/android"
+      PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
+      if [ -z "$PROJECT_DIR" ]; then
+        echo "package.json not found"
+        exit 1
       fi
-      echo "ANDROID_DIR=$ANDROID_DIR" >> "$GITHUB_ENV"
+      echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+      cd "$PROJECT_DIR"
+      npm install --legacy-peer-deps --no-audit --no-fund
+      npm run build
+      npx cap sync android
   - name: Build debug APK
+    shell: bash
     run: |
-      cd "$ANDROID_DIR"
+      cd "$PROJECT_DIR/android"
       chmod +x gradlew
       ./gradlew assembleDebug
-  - name: Prepare APK artifact
-    run: |
-      mkdir -p "$GITHUB_WORKSPACE/apk-output"
-      find "$ANDROID_DIR/app/build/outputs/apk/debug" -name '*.apk' -type f -exec cp {} "$GITHUB_WORKSPACE/apk-output/Shubh-Nimantran-debug.apk" \;
-      test -s "$GITHUB_WORKSPACE/apk-output/Shubh-Nimantran-debug.apk"
-      ls -lh "$GITHUB_WORKSPACE/apk-output/Shubh-Nimantran-debug.apk"
   - name: Upload APK
     uses: actions/upload-artifact@v4
     with:
       name: Shubh-Nimantran-debug
-      path: apk-output/Shubh-Nimantran-debug.apk
+      path: ${{ env.PROJECT_DIR }}/android/app/build/outputs/apk/debug/*.apk
       if-no-files-found: error
       retention-days: 7
