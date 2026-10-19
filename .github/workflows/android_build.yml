@@ -43,14 +43,27 @@ jobs:
 
       - name: Find project and install dependencies
         shell: bash
+        
+      - name: Set up Android SDK
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Find project and install dependencies
+        shell: bash
         run: |
           PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
           if [ -z "$PROJECT_DIR" ]; then
             echo "package.json not found"
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          cd "$PROJECT_DIR"
+          npm install --legacy-peer-deps --no-audit --no-fund
+          npm run build
+          npx cap sync android
 
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
           
 
       - name: Find project and install dependencies
