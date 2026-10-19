@@ -1,0 +1,9 @@
+
+{
+  "appId": "com.shubhnimantran.app",
+  "appName": "Shubh Nimantran",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
