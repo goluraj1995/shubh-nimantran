@@ -1,30 +1,25 @@
 
-name: Build Android APK
+name: Shubh Nimantran Android APK
 
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    paths:
+      - 'shubh-build/**'
+      - '.github/workflows/android_build.yml'
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  build-android:
     name: Build Android APK
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-     
-      - 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -32,77 +27,43 @@ jobs:
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+
+      - name: Find project and build web files
+        shell: bash
+        run: |
+          PROJECT_DIR="$(find . -type f -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs -r dirname)"
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERROR: package.json was not found."
+            exit 1
+          fi
+
+          echo "Found project at: $PROJECT_DIR"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+          cd "$PROJECT_DIR"
+          npm install --legacy-peer-deps --no-audit --no-fund
+          npm run build
+          npx cap sync android
 
       - name: Install Android SDK packages
         shell: bash
         run: |
-          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
-          if [ -z "$SDKMANAGER" ]; then
-            echo "sdkmanager not found"
-            exit 1
-          fi
-          yes | "$SDKMANAGER" --licenses
-          "$SDKMANAGER" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-        shell: bash
-        run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-
-      - name: Find project and install dependencies
-        shell: bash
-        run: |
-          PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "package.json not found"
-            exit 1
-          fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-          cd "$PROJECT_DIR"
-          npm install --legacy-peer-deps --no-audit --no-fund
-          npm run build
-          npx cap sync android
-
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Find project and install dependencies
-        shell: bash
-        run: |
-          PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "package.json not found"
-            exit 1
-          fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-          cd "$PROJECT_DIR"
-          npm install --legacy-peer-deps --no-audit --no-fund
-          npm run build
-          npx cap sync android
-
-          
-
-      - name: Find project and install dependencies
-        shell: bash
-        run: |
-          PROJECT_DIR="$(find . -name package.json -not -path '*/node_modules/*' -not -path '*/.git/*' -print -quit | xargs dirname)"
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "package.json not found"
-            exit 1
-          fi
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-          cd "$PROJECT_DIR"
-          npm install --legacy-peer-deps --no-audit --no-fund
-          npm run build
-          npx cap sync android
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build debug APK
         shell: bash
         run: |
           cd "$PROJECT_DIR/android"
+
+          if [ ! -f gradlew ]; then
+            echo "ERROR: Android Gradle wrapper not found."
+            exit 1
+          fi
+
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
