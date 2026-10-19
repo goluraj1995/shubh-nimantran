@@ -6,6 +6,10 @@ on:
   push:
     paths:
       - '**.zip'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
+      - 'www/**'
       - '.github/workflows/android_build.yml'
 
 permissions:
@@ -13,7 +17,7 @@ permissions:
 
 jobs:
   build-android:
-    name: Find source and build APK
+    name: Build Shubh Nimantran APK
     runs-on: ubuntu-24.04
 
     steps:
@@ -29,95 +33,70 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Inspect and extract all ZIP files
-        shell: bash
-        run: |
-          set -eu
-
-          mkdir -p _archives
-          shopt -s nullglob
-          ZIP_FILES=( *.zip )
-
-          if [ ${#ZIP_FILES[@]} -eq 0 ]; then
-            echo "ERROR: No ZIP files found in repository root."
-            exit 1
-          fi
-
-          for ZIP in "${ZIP_FILES[@]}"; do
-            DEST="_archives/${ZIP%.zip}"
-            mkdir -p "$DEST"
-            echo "Inspecting: $ZIP"
-            unzip -oq "$ZIP" -d "$DEST"
-          done
-
-          echo "----- Project files found in ZIPs -----"
-          find _archives -type f \
-            \( -name package.json -o -name gradlew -o -name settings.gradle -o -name settings.gradle.kts \) \
-            -print || true
-
-      - name: Locate Android project
-        shell: bash
-        run: |
-          set -eu
-
-          PROJECT_DIR=""
-          ANDROID_DIR=""
-
-          GRADLEW="$(find _archives -type f -name gradlew -print -quit || true)"
-
-          if [ -n "$GRADLEW" ]; then
-            ANDROID_DIR="$(dirname "$GRADLEW")"
-            PROJECT_DIR="$(dirname "$ANDROID_DIR")"
-            echo "Native Android project found: $ANDROID_DIR"
-          else
-            PACKAGE="$(find _archives -type f -name package.json \
-              -not -path '*/node_modules/*' -print -quit || true)"
-
-            if [ -n "$PACKAGE" ]; then
-              PROJECT_DIR="$(dirname "$PACKAGE")"
-              echo "JavaScript project found: $PROJECT_DIR"
-            fi
-          fi
-
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "ERROR: No Android Gradle wrapper or package.json was found in any ZIP."
-            echo "The ZIP files may contain only website build files, not the Android source."
-            exit 1
-          fi
-
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
-          echo "ANDROID_DIR=$ANDROID_DIR" >> "$GITHUB_ENV"
-
-      - name: Build web project and sync Android
-        if: env.ANDROID_DIR == ''
-        shell: bash
-        run: |
-          set -eu
-          cd "$PROJECT_DIR"
-
-          npm install --legacy-peer-deps --no-audit --no-fund
-          npm run build
-          npx cap sync android
-
-          echo "ANDROID_DIR=$PROJECT_DIR/android" >> "$GITHUB_ENV"
-
       - name: Install Android SDK packages
         shell: bash
         run: |
-          set -eu
+          set -e
           sdkmanager --install \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0"
 
+      - name: Prepare website files
+        shell: bash
+        run: |
+          set -e
+
+          mkdir -p www
+
+          ZIP_FILE="$(find . -maxdepth 1 -type f \
+            -name 'shubh_nimantran_dist*.zip' \
+            -print | sort -V | tail -n 1)"
+
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Using website archive: $ZIP_FILE"
+            unzip -oq "$ZIP_FILE" -d www
+          fi
+
+          if [ ! -f www/index.html ]; then
+            echo "ERROR: www/index.html not found."
+            echo "Website files must be available in the www folder or ZIP."
+            exit 1
+          fi
+
+          echo "Website files are ready."
+          ls -la www
+
+      - name: Install Capacitor dependencies
+        shell: bash
+        run: |
+          set -e
+          npm install --legacy-peer-deps --no-audit --no-fund
+
+      - name: Create Android project
+        shell: bash
+        run: |
+          set -e
+
+          if [ ! -f capacitor.config.json ]; then
+            echo "ERROR: capacitor.config.json is missing."
+            exit 1
+          fi
+
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+
+          npx cap sync android
+
       - name: Build debug APK
         shell: bash
         run: |
-          set -eu
-          cd "$ANDROID_DIR"
+          set -e
+          cd android
 
           if [ ! -f gradlew ]; then
-            echo "ERROR: gradlew is missing from $ANDROID_DIR"
+            echo "ERROR: Android Gradle wrapper was not generated."
             exit 1
           fi
 
@@ -128,6 +107,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Shubh-Nimantran-debug
-          path: ${{ env.ANDROID_DIR }}/app/build/outputs/apk/debug/*.apk
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
