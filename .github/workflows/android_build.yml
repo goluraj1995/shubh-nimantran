@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - '**'
+      - '**.zip'
       - '.github/workflows/android_build.yml'
 
 permissions:
@@ -13,15 +13,15 @@ permissions:
 
 jobs:
   build-android:
-    name: Build Android APK
+    name: Find source and build APK
     runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v5
 
       - name: Set up Java
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -29,53 +29,82 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Find and prepare project
+      - name: Inspect and extract all ZIP files
         shell: bash
         run: |
-          set -e
+          set -eu
 
-          echo "Checking repository files..."
-          find . -maxdepth 4 -type f | head -n 100
+          mkdir -p _archives
+          shopt -s nullglob
+          ZIP_FILES=( *.zip )
 
-          PROJECT_DIR="$(find . -type f -name package.json \
-            -not -path '*/node_modules/*' \
-            -not -path '*/.git/*' \
-            -print -quit | xargs -r dirname)"
-
-          if [ -z "$PROJECT_DIR" ]; then
-            ZIP_FILE="$(find . -maxdepth 5 -type f -iname '*.zip' \
-              -not -path '*/.git/*' -print -quit)"
-
-            if [ -n "$ZIP_FILE" ]; then
-              echo "Extracting project ZIP: $ZIP_FILE"
-              mkdir -p _android_source
-              unzip -oq "$ZIP_FILE" -d _android_source
-            fi
-
-            PROJECT_DIR="$(find . -type f -name package.json \
-              -not -path '*/node_modules/*' \
-              -not -path '*/.git/*' \
-              -print -quit | xargs -r dirname)"
-          fi
-
-          if [ -z "$PROJECT_DIR" ]; then
-            echo "ERROR: No package.json found."
-            echo "The Android source files may not be uploaded or extracted."
-            echo "Repository files are listed above in this log."
+          if [ ${#ZIP_FILES[@]} -eq 0 ]; then
+            echo "ERROR: No ZIP files found in repository root."
             exit 1
           fi
 
-          echo "Project found: $PROJECT_DIR"
-          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          for ZIP in "${ZIP_FILES[@]}"; do
+            DEST="_archives/${ZIP%.zip}"
+            mkdir -p "$DEST"
+            echo "Inspecting: $ZIP"
+            unzip -oq "$ZIP" -d "$DEST"
+          done
 
+          echo "----- Project files found in ZIPs -----"
+          find _archives -type f \
+            \( -name package.json -o -name gradlew -o -name settings.gradle -o -name settings.gradle.kts \) \
+            -print || true
+
+      - name: Locate Android project
+        shell: bash
+        run: |
+          set -eu
+
+          PROJECT_DIR=""
+          ANDROID_DIR=""
+
+          GRADLEW="$(find _archives -type f -name gradlew -print -quit || true)"
+
+          if [ -n "$GRADLEW" ]; then
+            ANDROID_DIR="$(dirname "$GRADLEW")"
+            PROJECT_DIR="$(dirname "$ANDROID_DIR")"
+            echo "Native Android project found: $ANDROID_DIR"
+          else
+            PACKAGE="$(find _archives -type f -name package.json \
+              -not -path '*/node_modules/*' -print -quit || true)"
+
+            if [ -n "$PACKAGE" ]; then
+              PROJECT_DIR="$(dirname "$PACKAGE")"
+              echo "JavaScript project found: $PROJECT_DIR"
+            fi
+          fi
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "ERROR: No Android Gradle wrapper or package.json was found in any ZIP."
+            echo "The ZIP files may contain only website build files, not the Android source."
+            exit 1
+          fi
+
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "ANDROID_DIR=$ANDROID_DIR" >> "$GITHUB_ENV"
+
+      - name: Build web project and sync Android
+        if: env.ANDROID_DIR == ''
+        shell: bash
+        run: |
+          set -eu
           cd "$PROJECT_DIR"
+
           npm install --legacy-peer-deps --no-audit --no-fund
           npm run build
           npx cap sync android
 
+          echo "ANDROID_DIR=$PROJECT_DIR/android" >> "$GITHUB_ENV"
+
       - name: Install Android SDK packages
         shell: bash
         run: |
+          set -eu
           sdkmanager --install \
             "platform-tools" \
             "platforms;android-35" \
@@ -84,11 +113,11 @@ jobs:
       - name: Build debug APK
         shell: bash
         run: |
-          set -e
-          cd "$PROJECT_DIR/android"
+          set -eu
+          cd "$ANDROID_DIR"
 
           if [ ! -f gradlew ]; then
-            echo "ERROR: gradlew not found in the Android project."
+            echo "ERROR: gradlew is missing from $ANDROID_DIR"
             exit 1
           fi
 
@@ -99,6 +128,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Shubh-Nimantran-debug
-          path: ${{ env.PROJECT_DIR }}/android/app/build/outputs/apk/debug/*.apk
+          path: ${{ env.ANDROID_DIR }}/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 7
