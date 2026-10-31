@@ -1,5 +1,5 @@
 
-name: Deploy Shubh Nimantran v29
+name: Deploy Shubh Nimantran v30
 
 on:
   push:
@@ -28,34 +28,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify v29 parts
+      - name: Verify v30 parts
         run: |
-          test "$(stat -c%s v29part1.bin)" -eq 17825792
-          test "$(stat -c%s v29part2.bin)" -eq 17825792
-          test "$(stat -c%s v29part3.bin)" -eq 17825792
-          test "$(stat -c%s v29part4.bin)" -eq 17825792
-          test "$(stat -c%s v29part5.bin)" -eq 12925241
+          set -e
 
-          echo "a214de3936fd01a60a51944a4733e3fa6cfcf38c26ecb26939223dfd3986159d  v29part1.bin" | sha256sum -c -
-          echo "51f4c7bee4fe7dc87b22df9040ccfecb766fc88994b58fff23355b66862c3426  v29part2.bin" | sha256sum -c -
-          echo "d43995504f05080d3320b5a73a8178de3d91f5e0a3d1c041c74fee7a85f1a864  v29part3.bin" | sha256sum -c -
-          echo "4d64978fc0f094029789202698bfd075bd533f4124503a5647cc628aba188e94  v29part4.bin" | sha256sum -c -
-          echo "71474232cc52d0ab9a024884d2f8f4fda8f3ee8cbc12f0da9c5119bdbd07897b  v29part5.bin" | sha256sum -c -
+          test "$(stat -c%s v30part1.bin)" -eq 17000000
+          test "$(stat -c%s v30part2.bin)" -eq 17000000
+          test "$(stat -c%s v30part3.bin)" -eq 17000000
+          test "$(stat -c%s v30part4.bin)" -eq 17000000
+          test "$(stat -c%s v30part5.bin)" -eq 16231289
 
-      - name: Rebuild and verify v29 ZIP
+          echo "49fb7f987fa04aeb959f51ebc8e75f4c70203cec11d9ae9fb403035cc0ff5404  v30part1.bin" | sha256sum -c -
+          echo "afb865452982ec37c2db2a767944175af7c381093f171353a5e18bf08c71c4ef  v30part2.bin" | sha256sum -c -
+          echo "a8ce7db13caea42cdf9deb25413fe4e35c707d6a0d43fe439b8cef14d7b2d99b  v30part3.bin" | sha256sum -c -
+          echo "c57d6813c9db59a6daa07de712df8952465559813f093eaaa5df69aaec1dc183  v30part4.bin" | sha256sum -c -
+          echo "80295ced74996f75dad006a8866ab813474f7b38732cb4b0e2de8de377f0dec2  v30part5.bin" | sha256sum -c -
+
+      - name: Rebuild and verify v30 ZIP
         run: |
-          cat v29part1.bin v29part2.bin v29part3.bin v29part4.bin v29part5.bin > shubh_nimantran_dist_v29.zip
+          set -e
 
-          test "$(stat -c%s shubh_nimantran_dist_v29.zip)" -eq 84228409
+          cat v30part1.bin v30part2.bin v30part3.bin v30part4.bin v30part5.bin > shubh_nimantran_dist_v30.zip
 
-          echo "0db846da76cba5a68f6e04e40eccbfb280e9940056a3a2f0c96b13a51b24c8ad  shubh_nimantran_dist_v29.zip" | sha256sum -c -
+          test "$(stat -c%s shubh_nimantran_dist_v30.zip)" -eq 84231289
 
-          unzip -t shubh_nimantran_dist_v29.zip
+          echo "a352bdcfce18f054f392296b98cf4c775a08b5448de515c3a4df2c80621d5fca  shubh_nimantran_dist_v30.zip" | sha256sum -c -
+
+          unzip -t shubh_nimantran_dist_v30.zip
 
       - name: Extract website ZIP
         run: |
+          set -e
           mkdir -p site
-          unzip -o shubh_nimantran_dist_v29.zip -d site
+          unzip -o shubh_nimantran_dist_v30.zip -d site
           test -f site/index.html
 
       - name: Configure Pages
