@@ -1,5 +1,5 @@
 
-name: Deploy Shubh Nimantran v30
+name: Deploy Shubh Nimantran v31
 
 on:
   push:
@@ -28,39 +28,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify v30 parts
+      - name: Verify v31 parts
         run: |
           set -e
 
-          test "$(stat -c%s v30part1.bin)" -eq 17000000
-          test "$(stat -c%s v30part2.bin)" -eq 17000000
-          test "$(stat -c%s v30part3.bin)" -eq 17000000
-          test "$(stat -c%s v30part4.bin)" -eq 17000000
-          test "$(stat -c%s v30part5.bin)" -eq 16231289
+          test "$(stat -c%s shubh_nimantran_v31_part1.bin)" -eq 16741432
+          test "$(stat -c%s shubh_nimantran_v31_part2.bin)" -eq 16741432
+          test "$(stat -c%s shubh_nimantran_v31_part3.bin)" -eq 16741432
+          test "$(stat -c%s shubh_nimantran_v31_part4.bin)" -eq 16741432
+          test "$(stat -c%s shubh_nimantran_v31_part5.bin)" -eq 16741432
 
-          echo "49fb7f987fa04aeb959f51ebc8e75f4c70203cec11d9ae9fb403035cc0ff5404  v30part1.bin" | sha256sum -c -
-          echo "afb865452982ec37c2db2a767944175af7c381093f171353a5e18bf08c71c4ef  v30part2.bin" | sha256sum -c -
-          echo "a8ce7db13caea42cdf9deb25413fe4e35c707d6a0d43fe439b8cef14d7b2d99b  v30part3.bin" | sha256sum -c -
-          echo "c57d6813c9db59a6daa07de712df8952465559813f093eaaa5df69aaec1dc183  v30part4.bin" | sha256sum -c -
-          echo "80295ced74996f75dad006a8866ab813474f7b38732cb4b0e2de8de377f0dec2  v30part5.bin" | sha256sum -c -
+          echo "add3ce5aef007526037e50edd30e2f0831db98660a6e9e26b97a55d298218353  shubh_nimantran_v31_part1.bin" | sha256sum -c -
+          echo "3b005cd002fd97ad02501f9e690c547f8728fa5923b0077141cab09ac061c20e  shubh_nimantran_v31_part2.bin" | sha256sum -c -
+          echo "105791c022781aa9c512122a49c74c047577bd56e620f22547290402767aea25  shubh_nimantran_v31_part3.bin" | sha256sum -c -
+          echo "642d634f77248faa98ef98e30a78d34205f3fc8cbae2106fe11709d4e731ad00  shubh_nimantran_v31_part4.bin" | sha256sum -c -
+          echo "77efcafe85ffe98500f7844bd36852233cc8735ae6378672d6cc6ff73a94a74d  shubh_nimantran_v31_part5.bin" | sha256sum -c -
 
-      - name: Rebuild and verify v30 ZIP
+      - name: Rebuild and verify v31 ZIP
         run: |
           set -e
 
-          cat v30part1.bin v30part2.bin v30part3.bin v30part4.bin v30part5.bin > shubh_nimantran_dist_v30.zip
+          cat shubh_nimantran_v31_part1.bin shubh_nimantran_v31_part2.bin shubh_nimantran_v31_part3.bin shubh_nimantran_v31_part4.bin shubh_nimantran_v31_part5.bin > shubh_nimantran_dist_v31.zip
 
-          test "$(stat -c%s shubh_nimantran_dist_v30.zip)" -eq 84231289
+          test "$(stat -c%s shubh_nimantran_dist_v31.zip)" -eq 83707160
 
-          echo "a352bdcfce18f054f392296b98cf4c775a08b5448de515c3a4df2c80621d5fca  shubh_nimantran_dist_v30.zip" | sha256sum -c -
+          echo "579e9e7d02f548218fe9b662e9787e57027b6600cf020023cc3a297aa356c610  shubh_nimantran_dist_v31.zip" | sha256sum -c -
 
-          unzip -t shubh_nimantran_dist_v30.zip
+          unzip -t shubh_nimantran_dist_v31.zip
 
       - name: Extract website ZIP
         run: |
           set -e
           mkdir -p site
-          unzip -o shubh_nimantran_dist_v30.zip -d site
+          unzip -o shubh_nimantran_dist_v31.zip -d site
           test -f site/index.html
 
       - name: Configure Pages
