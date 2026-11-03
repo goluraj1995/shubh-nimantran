@@ -1,0 +1,57 @@
+name: Build and Test Shubh Nimantran v32
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v32-upload
+    paths:
+      - "src/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "build-v32.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout v32 source
+        uses: actions/checkout@v4
+        with:
+          ref: v32-upload
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npm run lint
+
+      - name: Build website
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          set -euo pipefail
+          test -f dist/index.html
+          test -d dist/assets
+          echo "V32 BUILD SUCCESSFUL"
+
+      - name: Upload v32 build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shubh-nimantran-v32-build
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
