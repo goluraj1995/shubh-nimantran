@@ -1,3 +1,4 @@
+
 name: Verify Shubh Nimantran v32 ZIP
 
 on:
@@ -49,3 +50,11 @@ jobs:
           unzip -t shubh_nimantran_v32_SOURCE.zip
 
           echo "V32 ZIP VERIFICATION SUCCESSFUL"
+
+      - name: Upload verified v32 ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shubh-nimantran-v32-source
+          path: shubh_nimantran_v32_SOURCE.zip
+          if-no-files-found: error
+          retention-days: 30
