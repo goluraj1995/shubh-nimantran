@@ -1,0 +1,13 @@
+SHUBH NIMANTRAN V32 SOURCE
+
+Verification: SUCCESS
+ZIP: shubh_nimantran_v32_SOURCE.zip
+Size: 84301868 bytes
+SHA-256: 344fae7da10c9768656650b4120cdd1399c3888042caed6a9039a3d436251e5f
+
+All five parts verified.
+ZIP reassembly successful.
+ZIP integrity test successful.
+
+This branch is for v32 source preparation.
+Do not merge into main until build and security checks pass.
