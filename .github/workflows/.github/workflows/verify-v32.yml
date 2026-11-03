@@ -1,0 +1,51 @@
+name: Verify Shubh Nimantran v32 ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v32-upload
+    paths:
+      - "shubh_nimantran_v32_part*.bin"
+      - ".github/workflows/verify-v32.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout v32 branch
+        uses: actions/checkout@v4
+
+      - name: Verify all five parts
+        run: |
+          set -euo pipefail
+
+          test "$(stat -c%s shubh_nimantran_v32_part1.bin)" -eq 16860374
+          test "$(stat -c%s shubh_nimantran_v32_part2.bin)" -eq 16860374
+          test "$(stat -c%s shubh_nimantran_v32_part3.bin)" -eq 16860374
+          test "$(stat -c%s shubh_nimantran_v32_part4.bin)" -eq 16860374
+          test "$(stat -c%s shubh_nimantran_v32_part5.bin)" -eq 16860372
+
+          echo "1da146634a8eac2dada16f0d5bdce19d8e7ce124e817cbb0acf15a87ec836667  shubh_nimantran_v32_part1.bin" | sha256sum -c -
+          echo "a48caccae9115f58c3117f0ca7a0a477a348527ecd21953ddf9d5a66e044679d  shubh_nimantran_v32_part2.bin" | sha256sum -c -
+          echo "3f385a41bfc6e17ee627b43d0f347a13f17e13b3f4f566feab256ca2fa28b18e  shubh_nimantran_v32_part3.bin" | sha256sum -c -
+          echo "c666809a591bb3416adcca42041c69d151b88ae46f03b8d83abb4d8bb131a763  shubh_nimantran_v32_part4.bin" | sha256sum -c -
+          echo "2aaf81e186de52640e9ceba357df2359f00e48fd094b33de0c658ed2923dd4c1  shubh_nimantran_v32_part5.bin" | sha256sum -c -
+
+      - name: Reassemble and verify ZIP
+        run: |
+          set -euo pipefail
+
+          cat shubh_nimantran_v32_part1.bin shubh_nimantran_v32_part2.bin shubh_nimantran_v32_part3.bin shubh_nimantran_v32_part4.bin shubh_nimantran_v32_part5.bin > shubh_nimantran_v32_SOURCE.zip
+
+          test "$(stat -c%s shubh_nimantran_v32_SOURCE.zip)" -eq 84301868
+
+          echo "344fae7da10c9768656650b4120cdd1399c3888042caed6a9039a3d436251e5f  shubh_nimantran_v32_SOURCE.zip" | sha256sum -c -
+
+          unzip -t shubh_nimantran_v32_SOURCE.zip
+
+          echo "V32 ZIP VERIFICATION SUCCESSFUL"
