@@ -1,5 +1,4 @@
-name: Verify and Upload Shubh Nimantran v32 Source
-
+name: Verify, Build and Upload Shubh Nimantran v32
 on:
   workflow_dispatch:
   push:
@@ -8,68 +7,52 @@ on:
     paths:
       - "shubh_nimantran_v32_part*.bin"
       - ".github/workflows/verify-v32.yml"
-
 permissions:
   contents: write
-
 jobs:
-  verify-and-upload:
+  verify-build-and-upload:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout v32 branch
         uses: actions/checkout@v4
         with:
           ref: v32-upload
           fetch-depth: 0
-
       - name: Verify all five parts
         run: |
           set -euo pipefail
-
           test "$(stat -c%s shubh_nimantran_v32_part1.bin)" -eq 16860374
           test "$(stat -c%s shubh_nimantran_v32_part2.bin)" -eq 16860374
           test "$(stat -c%s shubh_nimantran_v32_part3.bin)" -eq 16860374
           test "$(stat -c%s shubh_nimantran_v32_part4.bin)" -eq 16860374
           test "$(stat -c%s shubh_nimantran_v32_part5.bin)" -eq 16860372
-
           echo "1da146634a8eac2dada16f0d5bdce19d8e7ce124e817cbb0acf15a87ec836667  shubh_nimantran_v32_part1.bin" | sha256sum -c -
           echo "a48caccae9115f58c3117f0ca7a0a477a348527ecd21953ddf9d5a66e044679d  shubh_nimantran_v32_part2.bin" | sha256sum -c -
           echo "3f385a41bfc6e17ee627b43d0f347a13f17e13b3f4f566feab256ca2fa28b18e  shubh_nimantran_v32_part3.bin" | sha256sum -c -
           echo "c666809a591bb3416adcca42041c69d151b88ae46f03b8d83abb4d8bb131a763  shubh_nimantran_v32_part4.bin" | sha256sum -c -
           echo "2aaf81e186de52640e9ceba357df2359f00e48fd094b33de0c658ed2923dd4c1  shubh_nimantran_v32_part5.bin" | sha256sum -c -
-
       - name: Reassemble and verify ZIP
         run: |
           set -euo pipefail
-
           cat shubh_nimantran_v32_part1.bin \
               shubh_nimantran_v32_part2.bin \
               shubh_nimantran_v32_part3.bin \
               shubh_nimantran_v32_part4.bin \
               shubh_nimantran_v32_part5.bin \
               > shubh_nimantran_v32_SOURCE.zip
-
           test "$(stat -c%s shubh_nimantran_v32_SOURCE.zip)" -eq 84301868
-
           echo "344fae7da10c9768656650b4120cdd1399c3888042caed6a9039a3d436251e5f  shubh_nimantran_v32_SOURCE.zip" | sha256sum -c -
-
           unzip -t shubh_nimantran_v32_SOURCE.zip
-
           echo "V32 ZIP VERIFICATION SUCCESSFUL"
-
       - name: Extract source safely
         run: |
           set -euo pipefail
-
           mkdir -p /tmp/v32_source
           unzip -q shubh_nimantran_v32_SOURCE.zip -d /tmp/v32_source
-
           test -f /tmp/v32_source/package.json
           test -f /tmp/v32_source/index.html
           test -d /tmp/v32_source/src
           test -d /tmp/v32_source/public
-
           rsync -a \
             --exclude='.github/' \
             --exclude='.git/' \
@@ -79,46 +62,58 @@ jobs:
             --exclude='*.zip' \
             --exclude='*.bin' \
             /tmp/v32_source/ ./
-
           if ! grep -qxF 'firebase-applet-config.json' .gitignore; then
             echo 'firebase-applet-config.json' >> .gitignore
           fi
-
           echo "SOURCE EXTRACTION SUCCESSFUL"
-
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript and lint check
+        run: npm run lint
+      - name: Build production website
+        run: npm run build
+      - name: Verify production build
+        run: |
+          set -euo pipefail
+          test -f dist/index.html
+          test -d dist/assets
+          echo "V32 PRODUCTION BUILD SUCCESSFUL"
       - name: Check sensitive files and prepare commit
         run: |
           set -euo pipefail
-
           git add -A
-
           if git diff --cached --name-only | grep -E '(^|/)(cookies\.txt|firebase-applet-config\.json|Shubh_Nimantran_v30_DATA_BACKUP\.json)$'; then
             echo "ERROR: Sensitive file detected in staged changes"
             exit 1
           fi
-
           echo "Sensitive-file check passed"
-
       - name: Commit source to v32-upload
         run: |
           set -euo pipefail
-
           if git diff --cached --quiet; then
             echo "No source changes to commit"
-            exit 0
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Add verified and build-tested Shubh Nimantran v32 source"
+            git push origin HEAD:v32-upload
           fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git commit -m "Add verified Shubh Nimantran v32 source"
-
-          git push origin HEAD:v32-upload
-
       - name: Upload verified ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: shubh-nimantran-v32-source
           path: shubh_nimantran_v32_SOURCE.zip
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload production build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shubh-nimantran-v32-build
+          path: dist/
           if-no-files-found: error
           retention-days: 30
