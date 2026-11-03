@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">शुभ निमंत्रण</string>
+    <string name="title_activity_main">शुभ निमंत्रण</string>
+    <string name="package_name">com.shubh.nimantran.cardmaker</string>
+    <string name="custom_url_scheme">com.shubh.nimantran.cardmaker</string>
+</resources>

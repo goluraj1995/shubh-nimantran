@@ -1,0 +1,6 @@
+{
+  "name": "शुभ निमंत्रण - डिजिटल शादी व जन्मदिन कार्ड मेकर",
+  "description": "हिंदू शादी, मुस्लिम शादी (निकाह व वलीमा) और जन्मदिन के लिए सुंदर इंटरैक्टिव डिजिटल निमंत्रण कार्ड बनाएं।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

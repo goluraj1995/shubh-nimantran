@@ -1,0 +1,747 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-devanagari-royal {
+    font-family: 'Rozha One', 'Noto Serif Devanagari', serif;
+  }
+  .font-devanagari-classic {
+    font-family: 'Yatra One', 'Noto Serif Devanagari', cursive;
+  }
+  .font-devanagari-serif {
+    font-family: 'Noto Serif Devanagari', 'Tiro Devanagari Hindi', Georgia, serif;
+  }
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+  .font-serif-luxury {
+    font-family: 'Noto Serif Devanagari', 'Cormorant Garamond', Georgia, serif;
+  }
+  .font-urdu {
+    font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+  }
+  .font-birthday {
+    font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  }
+  .font-script-fun {
+    font-family: 'Pacifico', cursive;
+  }
+}
+
+/* Custom scrollbar in auspicious gold & crimson */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #fdf6e7;
+}
+::-webkit-scrollbar-thumb {
+  background: #b8860b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #800020;
+}
+
+/* 1. Hindu Wedding: Sandalwood Cream with gold Paisley / Rangoli motif */
+.bg-mandap-texture {
+  background-color: #fcf6eb;
+  background-image: 
+    radial-gradient(#b8860b 0.6px, transparent 0.6px), 
+    radial-gradient(#800020 0.5px, #fcf6eb 0.5px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+.bg-royal-maroon {
+  background: radial-gradient(circle at 50% 30%, #87091f 0%, #630514 55%, #3e020a 100%);
+}
+
+.bg-royal-crimson {
+  background: linear-gradient(135deg, #78081a 0%, #54030f 100%);
+}
+
+/* 2. Muslim Wedding: Emerald Green Arabesque & Moroccan Geometry */
+.bg-emerald-islamic {
+  background: radial-gradient(circle at 50% 25%, #065f46 0%, #064e3b 50%, #022c22 100%);
+}
+
+.bg-islamic-pattern {
+  background-color: #f7faf7;
+  background-image: 
+    radial-gradient(#059669 0.7px, transparent 0.7px), 
+    radial-gradient(#d4af37 0.6px, #f7faf7 0.6px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+/* 3. Birthday: Festive Polka Dots & Confetti */
+.bg-birthday-party {
+  background-color: #fff9f5;
+  background-image: 
+    radial-gradient(#ff6b6b 0.8px, transparent 0.8px), 
+    radial-gradient(#4ecdc4 0.8px, transparent 0.8px),
+    radial-gradient(#ffe66d 0.8px, #fff9f5 0.8px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px, 8px 24px;
+}
+
+.bg-birthday-gradient {
+  background: radial-gradient(circle at 50% 30%, #ec4899 0%, #8b5cf6 60%, #312e81 100%);
+}
+
+/* Traditional wedding card paper styling */
+.card-paper-traditional {
+  background: #fffdf9;
+  background-image: linear-gradient(to bottom, #fffefb, #fdf8ef);
+  box-shadow: 0 15px 35px -5px rgba(84, 3, 15, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.35);
+}
+
+.card-paper-islamic {
+  background: #fffefb;
+  background-image: linear-gradient(to bottom, #ffffff, #f0fdf4);
+  box-shadow: 0 15px 35px -5px rgba(6, 78, 59, 0.25), 0 0 0 1px rgba(212, 175, 55, 0.4);
+}
+
+.card-paper-birthday {
+  background: #ffffff;
+  background-image: linear-gradient(to bottom, #ffffff, #fff7ed);
+  box-shadow: 0 15px 35px -5px rgba(236, 72, 153, 0.2), 0 0 0 1px rgba(245, 158, 11, 0.3);
+}
+
+/* Metallic gold gradients */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #b8860b 0%, #f3e5ab 25%, #d4af37 50%, #996515 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-foil-border {
+  border-color: #d4af37;
+  box-shadow: 0 0 0 1px #b8860b inset, 0 0 10px rgba(212, 175, 55, 0.25);
+}
+
+.maroon-gradient-text {
+  background: linear-gradient(135deg, #87091f 0%, #a81c33 50%, #54030f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.emerald-gradient-text {
+  background: linear-gradient(135deg, #065f46 0%, #10b981 50%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.birthday-gradient-text {
+  background: linear-gradient(135deg, #ec4899 0%, #f59e0b 50%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Traditional Ornate Border Frame */
+.ornate-border-frame {
+  position: relative;
+  border: 2px solid #d4af37;
+  padding: 6px;
+}
+.ornate-border-frame::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed #b8860b;
+  pointer-events: none;
+}
+
+/* Metallic Seal Pulse */
+@keyframes sacredSealPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6), 0 0 30px rgba(184, 134, 11, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(243, 229, 171, 0.9), 0 0 45px rgba(212, 175, 55, 0.8), 0 0 60px rgba(135, 9, 31, 0.4);
+  }
+}
+
+.animate-sacred-seal {
+  animation: sacredSealPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes islamicSealPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6), 0 0 30px rgba(6, 78, 59, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(243, 229, 171, 0.9), 0 0 45px rgba(212, 175, 55, 0.8), 0 0 60px rgba(6, 95, 70, 0.6);
+  }
+}
+
+.animate-islamic-seal {
+  animation: islamicSealPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes birthdayBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.04); }
+}
+
+.animate-birthday-bounce {
+  animation: birthdayBounce 2.5s ease-in-out infinite;
+}
+
+/* Diya Flicker animation */
+@keyframes diyaFlame {
+  0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.9; }
+  50% { transform: scale(1.15) rotate(2deg); opacity: 1; filter: drop-shadow(0 0 8px #ffb300); }
+}
+
+.animate-diya {
+  animation: diyaFlame 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes floatButterfly {
+  0% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.85; }
+  50% { transform: translateY(-45px) translateX(25px) rotate(6deg); opacity: 0.9; }
+  85% { opacity: 0.85; }
+  100% { transform: translateY(-90px) translateX(-15px) rotate(-4deg); opacity: 0; }
+}
+
+@keyframes wingFlap {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.25); }
+}
+
+.animate-float-butterfly {
+  animation: floatButterfly 12s infinite ease-in-out;
+}
+
+.animate-wing-flap {
+  animation: wingFlap 0.35s infinite ease-in-out;
+}
+
+
+/* Ultra-Realistic Butterfly & Glow Keyframes */
+@keyframes floatButterfly {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.95);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  35% {
+    transform: translateY(-55px) translateX(35px) rotate(12deg) scale(1.02);
+  }
+  60% {
+    transform: translateY(-110px) translateX(-25px) rotate(-8deg) scale(0.98);
+  }
+  85% {
+    opacity: 0.9;
+    transform: translateY(-165px) translateX(20px) rotate(6deg) scale(1.04);
+  }
+  100% {
+    transform: translateY(-210px) translateX(-10px) rotate(-4deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes wingFlap {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1);
+  }
+  50% {
+    transform: scaleX(0.2) scaleY(0.95);
+  }
+}
+
+.animate-float-butterfly {
+  animation: floatButterfly 14s infinite ease-in-out;
+}
+
+.animate-wing-flap {
+  animation: wingFlap 0.28s infinite ease-in-out;
+}
+
+/* Ultra-Realistic Multi-Directional Butterfly Flight Paths & Wing Flapping */
+@keyframes floatPath1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.95);
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.95;
+    transform: translate(60px, -70px) rotate(15deg) scale(1.02);
+  }
+  50% {
+    opacity: 0.98;
+    transform: translate(-40px, -150px) rotate(-10deg) scale(1.0);
+  }
+  80% {
+    opacity: 0.9;
+    transform: translate(50px, -230px) rotate(8deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-20px, -320px) rotate(-5deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes floatPath2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.98);
+    opacity: 0.1;
+  }
+  25% {
+    opacity: 0.95;
+    transform: translate(-70px, -80px) rotate(-18deg) scale(1.03);
+  }
+  55% {
+    opacity: 0.96;
+    transform: translate(50px, -160px) rotate(12deg) scale(0.97);
+  }
+  85% {
+    opacity: 0.88;
+    transform: translate(-40px, -240px) rotate(-8deg) scale(1.02);
+  }
+  100% {
+    transform: translate(30px, -330px) rotate(6deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes floatPath3 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.96);
+    opacity: 0.1;
+  }
+  30% {
+    opacity: 0.95;
+    transform: translate(45px, -90px) rotate(20deg) scale(1.04);
+  }
+  60% {
+    opacity: 0.95;
+    transform: translate(-55px, -180px) rotate(-15deg) scale(0.98);
+  }
+  85% {
+    opacity: 0.9;
+    transform: translate(25px, -260px) rotate(10deg) scale(1.02);
+  }
+  100% {
+    transform: translate(-10px, -350px) rotate(-4deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes wingFlapRealistic {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1) rotate(0deg);
+  }
+  35% {
+    transform: scaleX(0.18) scaleY(0.96) rotate(-3deg);
+  }
+  70% {
+    transform: scaleX(0.85) scaleY(1.02) rotate(3deg);
+  }
+}
+
+.animate-float-path-1 {
+  animation: floatPath1 15s infinite ease-in-out;
+}
+
+.animate-float-path-2 {
+  animation: floatPath2 17s infinite ease-in-out;
+}
+
+.animate-float-path-3 {
+  animation: floatPath3 13s infinite ease-in-out;
+}
+
+.animate-wing-flap-realistic {
+  animation: wingFlapRealistic 0.32s infinite ease-in-out;
+}
+
+/* Authentic Photorealistic Butterfly Gliding & Wing Flap Keyframes */
+@keyframes glidePath1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.95);
+    opacity: 0.1;
+  }
+  20% {
+    opacity: 0.98;
+    transform: translate(80px, -90px) rotate(18deg) scale(1.02);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-60px, -180px) rotate(-12deg) scale(1.0);
+  }
+  80% {
+    opacity: 0.92;
+    transform: translate(70px, -270px) rotate(10deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-30px, -380px) rotate(-6deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes glidePath2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.98);
+    opacity: 0.1;
+  }
+  25% {
+    opacity: 0.98;
+    transform: translate(-90px, -100px) rotate(-20deg) scale(1.03);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(70px, -190px) rotate(14deg) scale(0.97);
+  }
+  85% {
+    opacity: 0.9;
+    transform: translate(-50px, -280px) rotate(-9deg) scale(1.02);
+  }
+  100% {
+    transform: translate(40px, -390px) rotate(8deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes glidePath3 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.96);
+    opacity: 0.1;
+  }
+  30% {
+    opacity: 0.98;
+    transform: translate(60px, -110px) rotate(22deg) scale(1.04);
+  }
+  60% {
+    opacity: 0.98;
+    transform: translate(-70px, -210px) rotate(-16deg) scale(0.98);
+  }
+  85% {
+    opacity: 0.92;
+    transform: translate(40px, -300px) rotate(12deg) scale(1.02);
+  }
+  100% {
+    transform: translate(-20px, -400px) rotate(-5deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes photorealisticFlap {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1) rotate(0deg);
+  }
+  30% {
+    transform: scaleX(0.22) scaleY(0.97) rotate(-4deg);
+  }
+  65% {
+    transform: scaleX(0.9) scaleY(1.03) rotate(4deg);
+  }
+}
+
+.animate-glide-path-1 {
+  animation: glidePath1 16s infinite ease-in-out;
+}
+
+.animate-glide-path-2 {
+  animation: glidePath2 19s infinite ease-in-out;
+}
+
+.animate-glide-path-3 {
+  animation: glidePath3 15s infinite ease-in-out;
+}
+
+.animate-photorealistic-flap {
+  animation: photorealisticFlap 0.35s infinite ease-in-out;
+}
+
+/* Authentic Photographic Butterfly Multi-Directional Trajectories & 3D Wing Flap */
+@keyframes glideTraj1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.95);
+    opacity: 0.15;
+  }
+  25% {
+    opacity: 0.98;
+    transform: translate(90px, -110px) rotate(16deg) scale(1.02);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-70px, -220px) rotate(-10deg) scale(1.0);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translate(80px, -330px) rotate(8deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-40px, -450px) rotate(-4deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes glideTraj2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.98);
+    opacity: 0.15;
+  }
+  25% {
+    opacity: 0.98;
+    transform: translate(-100px, -120px) rotate(-18deg) scale(1.03);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(80px, -240px) rotate(12deg) scale(0.97);
+  }
+  75% {
+    opacity: 0.92;
+    transform: translate(-60px, -350px) rotate(-8deg) scale(1.02);
+  }
+  100% {
+    transform: translate(50px, -470px) rotate(6deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes glideTraj3 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.96);
+    opacity: 0.15;
+  }
+  30% {
+    opacity: 0.98;
+    transform: translate(70px, -130px) rotate(20deg) scale(1.04);
+  }
+  60% {
+    opacity: 0.98;
+    transform: translate(-80px, -260px) rotate(-14deg) scale(0.98);
+  }
+  85% {
+    opacity: 0.95;
+    transform: translate(50px, -370px) rotate(10deg) scale(1.02);
+  }
+  100% {
+    transform: translate(-30px, -480px) rotate(-5deg) scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes trueWingFlap {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1) rotate(0deg);
+  }
+  28% {
+    transform: scaleX(0.2) scaleY(0.98) rotate(-3deg);
+  }
+  60% {
+    transform: scaleX(0.88) scaleY(1.02) rotate(3deg);
+  }
+}
+
+.animate-glide-traj-1 {
+  animation: glideTraj1 18s infinite ease-in-out;
+}
+
+.animate-glide-traj-2 {
+  animation: glideTraj2 21s infinite ease-in-out;
+}
+
+.animate-glide-traj-3 {
+  animation: glideTraj3 17s infinite ease-in-out;
+}
+
+.animate-true-wing-flap {
+  animation: trueWingFlap 0.38s infinite ease-in-out;
+}
+
+/* Multi-layered Independent Hinged 3D Wing Flapping Keyframes */
+@keyframes hingedWingLeft {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(45deg);
+  }
+}
+
+@keyframes hingedWingRight {
+  0%, 100% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(-45deg);
+  }
+}
+
+.animate-hinged-wing-left {
+  animation: hingedWingLeft 0.35s infinite ease-in-out;
+}
+
+.animate-hinged-wing-right {
+  animation: hingedWingRight 0.35s infinite ease-in-out;
+}
+
+/* Organic Multi-Directional Flight Paths & Natural 3D Wing Flutter */
+@keyframes glidePath1 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.96);
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.98;
+    transform: translate(80px, -100px) rotate(14deg) scale(1.02);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-60px, -200px) rotate(-10deg) scale(1.0);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translate(70px, -300px) rotate(8deg) scale(1.04);
+  }
+  100% {
+    transform: translate(-30px, -400px) rotate(-4deg) scale(0.96);
+    opacity: 0;
+  }
+}
+
+@keyframes glidePath2 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.98);
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.98;
+    transform: translate(-90px, -110px) rotate(-16deg) scale(1.03);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(70px, -220px) rotate(12deg) scale(0.97);
+  }
+  75% {
+    opacity: 0.92;
+    transform: translate(-50px, -320px) rotate(-8deg) scale(1.02);
+  }
+  100% {
+    transform: translate(40px, -420px) rotate(6deg) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes glidePath3 {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.97);
+    opacity: 0.2;
+  }
+  30% {
+    opacity: 0.98;
+    transform: translate(60px, -120px) rotate(18deg) scale(1.04);
+  }
+  60% {
+    opacity: 0.98;
+    transform: translate(-70px, -240px) rotate(-12deg) scale(0.98);
+  }
+  85% {
+    opacity: 0.95;
+    transform: translate(40px, -340px) rotate(10deg) scale(1.02);
+  }
+  100% {
+    transform: translate(-20px, -440px) rotate(-5deg) scale(0.97);
+    opacity: 0;
+  }
+}
+
+@keyframes organicWingFlutter {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1) rotate(0deg);
+  }
+  30% {
+    transform: scaleX(0.25) scaleY(0.97) rotate(-3deg);
+  }
+  65% {
+    transform: scaleX(0.92) scaleY(1.03) rotate(3deg);
+  }
+}
+
+.animate-glide-path-1 {
+  animation: glidePath1 18s infinite ease-in-out;
+}
+
+.animate-glide-path-2 {
+  animation: glidePath2 21s infinite ease-in-out;
+}
+
+.animate-glide-path-3 {
+  animation: glidePath3 17s infinite ease-in-out;
+}
+
+.animate-organic-wing-flutter {
+  animation: organicWingFlutter 0.36s infinite ease-in-out;
+}
+
+@keyframes naturalButterflyDrift {
+  0% {
+    transform: translate(0px, 0px) rotate(0deg) scale(0.96);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translate(75px, -60px) rotate(8deg) scale(1.01);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50px, -130px) rotate(-6deg) scale(0.98);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translate(60px, -200px) rotate(6deg) scale(1.02);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-20px, -280px) rotate(-3deg) scale(0.96);
+    opacity: 0;
+  }
+}
+
+.animate-natural-drift {
+  animation: naturalButterflyDrift 20s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-natural-drift, .animate-glide-path-1, .animate-glide-path-2, .animate-glide-path-3 {
+    animation: none !important;
+    opacity: 0.8;
+  }
+}
+
+@keyframes wingFlap3D {
+  0%, 100% {
+    transform: rotateY(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: rotateY(35deg) rotateZ(1.5deg);
+  }
+  50% {
+    transform: rotateY(0deg) rotateZ(0deg);
+  }
+  75% {
+    transform: rotateY(-35deg) rotateZ(-1.5deg);
+  }
+}
+
+.animate-wing-flap-3d {
+  animation: wingFlap3D 0.32s infinite ease-in-out;
+  transform-style: preserve-3d;
+  perspective: 900px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-wing-flap-3d {
+    animation: none !important;
+  }
+}

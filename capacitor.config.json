@@ -1,9 +1,14 @@
-
 {
-  "appId": "com.shubhnimantran.app",
-  "appName": "Shubh Nimantran",
-  "webDir": "www",
+  "appId": "com.shubh.nimantran.cardmaker",
+  "appName": "शुभ निमंत्रण",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
   }
 }
