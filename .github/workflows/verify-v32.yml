@@ -1,5 +1,4 @@
-
-name: Verify Shubh Nimantran v32 ZIP
+name: Verify and Upload Shubh Nimantran v32 Source
 
 on:
   workflow_dispatch:
@@ -11,15 +10,18 @@ on:
       - ".github/workflows/verify-v32.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  verify:
+  verify-and-upload:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout v32 branch
         uses: actions/checkout@v4
+        with:
+          ref: v32-upload
+          fetch-depth: 0
 
       - name: Verify all five parts
         run: |
@@ -41,7 +43,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          cat shubh_nimantran_v32_part1.bin shubh_nimantran_v32_part2.bin shubh_nimantran_v32_part3.bin shubh_nimantran_v32_part4.bin shubh_nimantran_v32_part5.bin > shubh_nimantran_v32_SOURCE.zip
+          cat shubh_nimantran_v32_part1.bin \
+              shubh_nimantran_v32_part2.bin \
+              shubh_nimantran_v32_part3.bin \
+              shubh_nimantran_v32_part4.bin \
+              shubh_nimantran_v32_part5.bin \
+              > shubh_nimantran_v32_SOURCE.zip
 
           test "$(stat -c%s shubh_nimantran_v32_SOURCE.zip)" -eq 84301868
 
@@ -51,7 +58,64 @@ jobs:
 
           echo "V32 ZIP VERIFICATION SUCCESSFUL"
 
-      - name: Upload verified v32 ZIP artifact
+      - name: Extract source safely
+        run: |
+          set -euo pipefail
+
+          mkdir -p /tmp/v32_source
+          unzip -q shubh_nimantran_v32_SOURCE.zip -d /tmp/v32_source
+
+          test -f /tmp/v32_source/package.json
+          test -f /tmp/v32_source/index.html
+          test -d /tmp/v32_source/src
+          test -d /tmp/v32_source/public
+
+          rsync -a \
+            --exclude='.github/' \
+            --exclude='.git/' \
+            --exclude='firebase-applet-config.json' \
+            --exclude='cookies.txt' \
+            --exclude='Shubh_Nimantran_v30_DATA_BACKUP.json' \
+            --exclude='*.zip' \
+            --exclude='*.bin' \
+            /tmp/v32_source/ ./
+
+          if ! grep -qxF 'firebase-applet-config.json' .gitignore; then
+            echo 'firebase-applet-config.json' >> .gitignore
+          fi
+
+          echo "SOURCE EXTRACTION SUCCESSFUL"
+
+      - name: Check sensitive files and prepare commit
+        run: |
+          set -euo pipefail
+
+          git add -A
+
+          if git diff --cached --name-only | grep -E '(^|/)(cookies\.txt|firebase-applet-config\.json|Shubh_Nimantran_v30_DATA_BACKUP\.json)$'; then
+            echo "ERROR: Sensitive file detected in staged changes"
+            exit 1
+          fi
+
+          echo "Sensitive-file check passed"
+
+      - name: Commit source to v32-upload
+        run: |
+          set -euo pipefail
+
+          if git diff --cached --quiet; then
+            echo "No source changes to commit"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git commit -m "Add verified Shubh Nimantran v32 source"
+
+          git push origin HEAD:v32-upload
+
+      - name: Upload verified ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: shubh-nimantran-v32-source
